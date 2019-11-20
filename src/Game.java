@@ -1,14 +1,20 @@
 import GameEntity.enemy.Enemy;
 import GameEntity.weapon.Weapon;
 import javafx.animation.AnimationTimer;
+import javafx.animation.Timeline;
+import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -17,12 +23,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game extends Application {
+//    private Timeline t;
+    AnimationTimer gameloop;
 
     Pane backgroundLayer;
-    Pane infoLayer;
+    GridPane infoLayer;
+    GridPane playfiledLayer;
 
     List<Weapon> weapons = new ArrayList<>();
     List<Enemy> enemies = new ArrayList<>();
+
+    int lives = 19;
+    public double money = 100;
+
+    Text levelLabel = new Text("Level: ");
+    Text moneyLabel = new Text(Double.toString(money));
+    Text livesLabel = new Text("Lives");
+    Button pause = new Button("Pause");
+    Button nextLevel = new Button("Next Level");
+    Button sell = new Button("Sell");
+
+    ImageView singleCannon = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile249" + ".png"));
+    ImageView singleRocket = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile206" + ".png"));
+    ImageView missile = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile204" + ".png"));
+
+
 
 
     private void createBackgroundLayer() {
@@ -46,7 +71,7 @@ public class Game extends Application {
         }
 
         //test thêm hình xe tăng
-        ImageView background = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile" + "268" + ".png"));
+        /*ImageView background = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile" + "268" + ".png"));
         ImageView background2 = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile" + "291" + ".png"));
         background.setX(32);
         background2.setX(32);
@@ -55,7 +80,7 @@ public class Game extends Application {
         background.setRotate(-90);
         background2.setRotate(-90);
         backgroundLayer.getChildren().add(background);
-        backgroundLayer.getChildren().add(background2);
+        backgroundLayer.getChildren().add(background2);*/
 
 
 
@@ -64,7 +89,48 @@ public class Game extends Application {
 
     }
 
+    private void updateInfoLayer(){
+        if (money < Settings.SINGLE_CANNON_COST) singleCannon.setOpacity(0.2);
+        if (money < Settings.SINGLE_ROCKET_COST) singleRocket.setOpacity(0.2);
+        if (money < Settings.MISSILE_COST) missile.setOpacity(0.2);
+    }
+
     private void createInfoLayer(){
+        infoLayer.add(levelLabel,0,0);
+        infoLayer.add(moneyLabel,0,1);
+        infoLayer.add(livesLabel,3,1);
+        infoLayer.add(pause,0,5);
+        infoLayer.add(nextLevel,0,6);
+        infoLayer.add(sell,0,7);
+        infoLayer.add(singleCannon,0,3);
+        infoLayer.add(singleRocket,1,3);
+        infoLayer.add(missile,2,3);
+        infoLayer.setHgap(5);
+        infoLayer.setVgap(10);
+        Pane pane = new Pane();
+
+        pause.setOnMouseClicked(e ->{
+            gameloop.stop();
+        });
+
+
+        sell.setOnMouseClicked(e ->{
+            money -= 10;
+            moneyLabel.setText(Double.toString(money));
+        });
+
+        //test
+        singleCannon.setOnMouseClicked(e -> {
+            singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
+        });
+
+
+        //infoLayer.setFillHeight(new Pane());
+
+        infoLayer.setTranslateX(Settings.PIXS_PER_PIC * Settings.MAP_COL);
+        //infoLayer.setLayoutX(Settings.PIXS_PER_PIC * 10);
+        //infoLayer.setAlignment(Pos.CENTER);
+
 
     }
 
@@ -77,12 +143,12 @@ public class Game extends Application {
         root.getChildren().add(backgroundLayer);
         createBackgroundLayer();
 
-        infoLayer = new Pane();
+        infoLayer = new GridPane();
         root.getChildren().add(infoLayer);
         createInfoLayer();
 
-        //ke sọc
-        Line l1 = new Line();
+        //kẻ sọc
+        /*Line l1 = new Line();
         List<Line> l = new ArrayList<>();
         double colStartY = 0;
         double colEndY = 64.0 * 7;
@@ -108,16 +174,19 @@ public class Game extends Application {
         }
         for (Line line : l){
             root.getChildren().add(line);
-        };
+        };*/
 
 
         Scene scene = new Scene(root);
+//        scene.setFill(Color.BLUE);
         stage.setScene(scene);
         stage.show();
 
-        AnimationTimer gameloop = new AnimationTimer() {
+        gameloop = new AnimationTimer() {
             @Override
             public void handle(long l) {
+                updateInfoLayer();
+
 
             }
         };
