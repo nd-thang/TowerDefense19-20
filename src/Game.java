@@ -1,4 +1,5 @@
 import GameEntity.enemy.Enemy;
+import GameEntity.weapon.SingleCannon;
 import GameEntity.weapon.Weapon;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Timeline;
@@ -21,14 +22,16 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Game extends Application {
 //    private Timeline t;
     AnimationTimer gameloop;
+    boolean isRunning = true;
 
     Pane backgroundLayer;
     GridPane infoLayer;
-    GridPane playfiledLayer;
+    Pane playfiledLayer;
 
     List<Weapon> weapons = new ArrayList<>();
     List<Enemy> enemies = new ArrayList<>();
@@ -43,11 +46,9 @@ public class Game extends Application {
     Button nextLevel = new Button("Next Level");
     Button sell = new Button("Sell");
 
-    ImageView singleCannon = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile249" + ".png"));
-    ImageView singleRocket = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile206" + ".png"));
-    ImageView missile = new ImageView(new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile204" + ".png"));
-
-
+    ImageView singleCannon = new ImageView(Settings.SCANNON_IMG);
+    ImageView singleRocket = new ImageView(Settings.SROCKET_IMG);
+    ImageView missile = new ImageView(Settings.MISSILE_IMG);
 
 
     private void createBackgroundLayer() {
@@ -90,9 +91,11 @@ public class Game extends Application {
     }
 
     private void updateInfoLayer(){
-        if (money < Settings.SINGLE_CANNON_COST) singleCannon.setOpacity(0.2);
-        if (money < Settings.SINGLE_ROCKET_COST) singleRocket.setOpacity(0.2);
+        //update front - end infolayer
+        if (money < Settings.SCANNON_COST) singleCannon.setOpacity(0.2);
+        if (money < Settings.SROCKET_COST) singleRocket.setOpacity(0.2);
         if (money < Settings.MISSILE_COST) missile.setOpacity(0.2);
+        moneyLabel.setText(Double.toString(money));
     }
 
     private void createInfoLayer(){
@@ -107,31 +110,55 @@ public class Game extends Application {
         infoLayer.add(missile,2,3);
         infoLayer.setHgap(5);
         infoLayer.setVgap(10);
+
         Pane pane = new Pane();
+        infoLayer.setTranslateX(Settings.PIXS_PER_PIC * Settings.MAP_COL);
+        //infoLayer.setLayoutX(Settings.PIXS_PER_PIC * 10);
+        //infoLayer.setAlignment(Pos.CENTER);
 
         pause.setOnMouseClicked(e ->{
-            gameloop.stop();
+//           [làm sau]các nút vẫn hoạt động bình thường vì chỉ dừng phần trong gameloop
+//           (tiền vẫn trừ và hiển thị lại sau khi nhấn pause)
+            if(isRunning) {
+                gameloop.stop();
+                isRunning = false;
+            } else {
+                gameloop.start();
+                isRunning = true;
+            }
         });
-
 
         sell.setOnMouseClicked(e ->{
             money -= 10;
-            moneyLabel.setText(Double.toString(money));
         });
 
         //test
         singleCannon.setOnMouseClicked(e -> {
             singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
+            if(money > Settings.SCANNON_COST) {
+                playfiledLayer.setOnMouseClicked(e2 ->{
+                    double centerX = e2.getX() - ((int) e2.getX()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    double centerY = e2.getY() - ((int) e2.getY()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    createSingleCannon(centerX, centerY);
+                    //setonmouseclicked to do nothing
+                    playfiledLayer.setOnMouseClicked(e3 ->{});
+                });
+            }
         });
+    }
 
+    private void loadBasement(double centerX, double centerY, Image img){
+        ImageView boGView = new ImageView(img);
+        boGView.setX(centerX - img.getWidth() / 2);
+        boGView.setY(centerY - img.getHeight() / 2);
+        playfiledLayer.getChildren().add(boGView);
+    }
 
-        //infoLayer.setFillHeight(new Pane());
-
-        infoLayer.setTranslateX(Settings.PIXS_PER_PIC * Settings.MAP_COL);
-        //infoLayer.setLayoutX(Settings.PIXS_PER_PIC * 10);
-        //infoLayer.setAlignment(Pos.CENTER);
-
-
+    private void createSingleCannon(double centerX, double centerY) {
+        loadBasement(centerX, centerY, Settings.SCANNON_BASE_IMG);
+        SingleCannon newSCannon = new SingleCannon(playfiledLayer, Settings.SCANNON_IMG, centerX, centerY, 0,0,0,0,Settings.SCANNON_DAMAGE,Settings.SCANNON_COST, Settings.DCANNON_ATKSPEED);
+        weapons.add(newSCannon);
+        money -= Settings.SCANNON_COST;
     }
 
     @Override
@@ -147,8 +174,13 @@ public class Game extends Application {
         root.getChildren().add(infoLayer);
         createInfoLayer();
 
+        playfiledLayer = new Pane();
+        root.getChildren().add(playfiledLayer);
+        playfiledLayer.setPrefSize(Settings.PIXS_PER_PIC * 10, Settings.PIXS_PER_PIC * 7);
+
+
         //kẻ sọc
-        /*Line l1 = new Line();
+        Line l1 = new Line();
         List<Line> l = new ArrayList<>();
         double colStartY = 0;
         double colEndY = 64.0 * 7;
@@ -167,14 +199,14 @@ public class Game extends Application {
         for (int col = 0; col < 9; col++){
             Line line = new Line();
             line.setStartY(colStartY);
-            line.setStartX(64.0 * (col + 1));
+            line.setStartX(Settings.PIXS_PER_PIC * (col + 1));
             line.setEndY(colEndY);
-            line.setEndX(64.0 * (col + 1));
+            line.setEndX(Settings.PIXS_PER_PIC * (col + 1));
             l.add(line);
         }
         for (Line line : l){
             root.getChildren().add(line);
-        };*/
+        };
 
 
         Scene scene = new Scene(root);
@@ -186,8 +218,6 @@ public class Game extends Application {
             @Override
             public void handle(long l) {
                 updateInfoLayer();
-
-
             }
         };
 
