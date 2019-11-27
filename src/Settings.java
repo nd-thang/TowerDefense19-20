@@ -10,7 +10,10 @@ public class Settings {
     public static Image SCANNON_BASE_IMG = new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile180" + ".png");
 
     public static Image SROCKET_IMG = new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile206" + ".png");
+    public static Image SROCKET_BASE_IMG = new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile183" + ".png");
+
     public static Image MISSILE_IMG = new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile204" + ".png");
+    public static Image MISSILE_BASE_IMG = new Image("file:resources/img/AssetsKit_2/PNG/Default size/towerDefense_tile181" + ".png");
 
     public static double SCANNON_DAMAGE = 1;
     public static double DCANNON_DAMAGE = 1;

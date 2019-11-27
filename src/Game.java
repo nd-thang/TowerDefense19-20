@@ -37,7 +37,7 @@ public class Game extends Application {
     List<Enemy> enemies = new ArrayList<>();
 
     int lives = 19;
-    public double money = 100;
+    double money = 100;
 
     Text levelLabel = new Text("Level: ");
     Text moneyLabel = new Text(Double.toString(money));
@@ -134,12 +134,41 @@ public class Game extends Application {
 
         //test
         singleCannon.setOnMouseClicked(e -> {
-            singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
+            //bấm thử
+            //singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
             if(money > Settings.SCANNON_COST) {
                 playfiledLayer.setOnMouseClicked(e2 ->{
                     double centerX = e2.getX() - ((int) e2.getX()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
                     double centerY = e2.getY() - ((int) e2.getY()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
-                    createSingleCannon(centerX, centerY);
+                    createWeapon(centerX, centerY, "SCANNON");
+                    //setonmouseclicked to do nothing
+                    playfiledLayer.setOnMouseClicked(e3 ->{});
+                });
+            }
+        });
+
+        singleRocket.setOnMouseClicked(e -> {
+            //bấm thử
+            //singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
+            if(money > Settings.SROCKET_COST) {
+                playfiledLayer.setOnMouseClicked(e2 ->{
+                    double centerX = e2.getX() - ((int) e2.getX()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    double centerY = e2.getY() - ((int) e2.getY()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    createWeapon(centerX, centerY, "SROCKET");
+                    //setonmouseclicked to do nothing
+                    playfiledLayer.setOnMouseClicked(e3 ->{});
+                });
+            }
+        });
+
+        missile.setOnMouseClicked(e -> {
+            //bấm thử
+            //singleCannon.setOpacity(Math.abs(singleCannon.getOpacity() - 1.2));
+            if(money > Settings.MISSILE_COST) {
+                playfiledLayer.setOnMouseClicked(e2 ->{
+                    double centerX = e2.getX() - ((int) e2.getX()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    double centerY = e2.getY() - ((int) e2.getY()) % (int) Settings.PIXS_PER_PIC + Settings.PIXS_PER_PIC / 2;
+                    createWeapon(centerX, centerY, "MISSILE");
                     //setonmouseclicked to do nothing
                     playfiledLayer.setOnMouseClicked(e3 ->{});
                 });
@@ -154,11 +183,28 @@ public class Game extends Application {
         playfiledLayer.getChildren().add(boGView);
     }
 
-    private void createSingleCannon(double centerX, double centerY) {
-        loadBasement(centerX, centerY, Settings.SCANNON_BASE_IMG);
-        SingleCannon newSCannon = new SingleCannon(playfiledLayer, Settings.SCANNON_IMG, centerX, centerY, 0,0,0,0,Settings.SCANNON_DAMAGE,Settings.SCANNON_COST, Settings.DCANNON_ATKSPEED);
-        weapons.add(newSCannon);
-        money -= Settings.SCANNON_COST;
+    private void createWeapon(double centerX, double centerY, String type) {
+        switch (type){
+            case "SCANNON":
+                loadBasement(centerX, centerY, Settings.SCANNON_BASE_IMG);
+                SingleCannon newSCannon = new SingleCannon(playfiledLayer, Settings.SCANNON_IMG, centerX, centerY, 0,0,0,0,Settings.SCANNON_DAMAGE,Settings.SCANNON_COST, Settings.SCANNON_ATKSPEED);
+                weapons.add(newSCannon);
+                money -= Settings.SCANNON_COST;
+                break;
+            case "SROCKET":
+                loadBasement(centerX, centerY, Settings.SROCKET_BASE_IMG);
+                SingleCannon newSRocket = new SingleCannon(playfiledLayer, Settings.SROCKET_IMG, centerX, centerY, 0,0,0,0,Settings.SROCKET_DAMAGE,Settings.SROCKET_COST, Settings.SROCKET_ATKSPEED);
+                weapons.add(newSRocket);
+                money -= Settings.SROCKET_COST;
+                break;
+            case "MISSILE":
+                loadBasement(centerX, centerY, Settings.MISSILE_BASE_IMG);
+                SingleCannon newMissile = new SingleCannon(playfiledLayer, Settings.MISSILE_IMG, centerX, centerY, 0,0,0,0,Settings.MISSILE_DAMAGE,Settings.MISSILE_COST, Settings.MISSILE_ATKSPEED);
+                weapons.add(newMissile);
+                money -= Settings.MISSILE_COST;
+                break;
+        }
+
     }
 
     @Override
