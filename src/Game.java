@@ -1,28 +1,31 @@
+import GameEntity.EntityBase;
 import GameEntity.enemy.Enemy;
+import GameEntity.enemy.SmallerEnemy;
+import GameEntity.weapon.Missile;
 import GameEntity.weapon.SingleCannon;
+import GameEntity.weapon.SingleRocket;
 import GameEntity.weapon.Weapon;
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Game extends Application {
 //    private Timeline t;
@@ -38,6 +41,8 @@ public class Game extends Application {
 
     int lives = 19;
     double money = 100;
+
+    int rnd;
 
     Text levelLabel = new Text("Level: ");
     Text moneyLabel = new Text(Double.toString(money));
@@ -187,25 +192,71 @@ public class Game extends Application {
         switch (type){
             case "SCANNON":
                 loadBasement(centerX, centerY, Settings.SCANNON_BASE_IMG);
-                SingleCannon newSCannon = new SingleCannon(playfiledLayer, Settings.SCANNON_IMG, centerX, centerY, 0,0,0,0,Settings.SCANNON_DAMAGE,Settings.SCANNON_COST, Settings.SCANNON_ATKSPEED);
+                SingleCannon newSCannon = new SingleCannon(playfiledLayer, Settings.SCANNON_IMG, centerX, centerY, 0,0,0,0,Settings.SCANNON_DAMAGE,Settings.SCANNON_COST, Settings.SCANNON_ATKSPEED,Settings.SCANNON_ATKRANGE);
                 weapons.add(newSCannon);
                 money -= Settings.SCANNON_COST;
                 break;
             case "SROCKET":
                 loadBasement(centerX, centerY, Settings.SROCKET_BASE_IMG);
-                SingleCannon newSRocket = new SingleCannon(playfiledLayer, Settings.SROCKET_IMG, centerX, centerY, 0,0,0,0,Settings.SROCKET_DAMAGE,Settings.SROCKET_COST, Settings.SROCKET_ATKSPEED);
+                SingleRocket newSRocket = new SingleRocket(playfiledLayer, Settings.SROCKET_IMG, centerX, centerY, 0,0,0,0,Settings.SROCKET_DAMAGE,Settings.SROCKET_COST, Settings.SROCKET_ATKSPEED, Settings.SROCKET_ATKRANGE);
                 weapons.add(newSRocket);
                 money -= Settings.SROCKET_COST;
                 break;
             case "MISSILE":
                 loadBasement(centerX, centerY, Settings.MISSILE_BASE_IMG);
-                SingleCannon newMissile = new SingleCannon(playfiledLayer, Settings.MISSILE_IMG, centerX, centerY, 0,0,0,0,Settings.MISSILE_DAMAGE,Settings.MISSILE_COST, Settings.MISSILE_ATKSPEED);
+                Missile newMissile = new Missile(playfiledLayer, Settings.MISSILE_IMG, centerX, centerY, 0,0,0,0,Settings.MISSILE_DAMAGE,Settings.MISSILE_COST, Settings.MISSILE_ATKSPEED, Settings.MISSILE_ATKRANGE);
                 weapons.add(newMissile);
                 money -= Settings.MISSILE_COST;
                 break;
         }
 
     }
+
+    private void spawnEnemies(){
+        //đọc file level
+//        try {
+//            File x = new File("C:\\sololearn\\test.txt");
+//            Scanner sc = new Scanner(x);
+//            while(sc.hasNext()) {
+//                System.out.println(sc.next());
+//            }
+//            sc.close();
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Error");
+//        }
+
+        //**//
+
+        // for  abc giây, {đọc số tiếp: loại quái, abc, spawn loại quái đó},
+
+//        Timeline timeline = new Timeline(new KeyFrame(
+//                Duration.millis(2000),
+//                ae -> {
+//                    spawnEnemies();
+//                }));
+//        timeline.setCycleCount(Animation.INDEFINITE);
+//        timeline.play();
+        //Enemy abc = new Enemy(playfiledLayer, Settings.SMALLER_ENEMY_IMG, 64 * (int) (Math.random() * 10), 64 * (int) (Math.random() * 7),0,0,0,0, Settings.SMALLER_ENEMY_HEALTH,Settings.SMALLER_ENEMY_REWARD, Settings.SMALLER_ENEMY_SPEED);
+        Enemy abc = new SmallerEnemy(playfiledLayer, Settings.SMALLER_ENEMY_IMG, Settings.X_OF_STARTING_POINT, Settings.Y_OF_STARTING_POINT,-90,0,0,0, Settings.SMALLER_ENEMY_HEALTH,Settings.SMALLER_ENEMY_REWARD, Settings.SMALLER_ENEMY_SPEED);
+//        Enemy abc = new Enemy(playfiledLayer, Settings.SMALLER_ENEMY_IMG, 64 * 3, 64 * 3,90,0,0,0, Settings.SMALLER_ENEMY_HEALTH,Settings.SMALLER_ENEMY_REWARD, Settings.SMALLER_ENEMY_SPEED);
+        enemies.add(abc);
+    }
+
+    //https://stackoverflow.com/questions/17279519/removing-items-from-a-list
+    private void removeEntities(List<? extends EntityBase> entities) {
+        Iterator<? extends EntityBase> it = entities.iterator();
+        while(it.hasNext()) {
+            EntityBase entity = it.next();
+            if(entity.isRemovable()) {
+                //remove display
+                entity.removeFromLayer();
+                //remove from list
+                it.remove();
+            }
+        }
+    }
+
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -224,6 +275,7 @@ public class Game extends Application {
         root.getChildren().add(playfiledLayer);
         playfiledLayer.setPrefSize(Settings.PIXS_PER_PIC * 10, Settings.PIXS_PER_PIC * 7);
 
+//        spawnEnemies();
 
         //kẻ sọc
         Line l1 = new Line();
@@ -241,7 +293,6 @@ public class Game extends Application {
             line.setEndY(64.0 * (row + 1));
             l.add(line);
         }
-
         for (int col = 0; col < 9; col++){
             Line line = new Line();
             line.setStartY(colStartY);
@@ -260,9 +311,51 @@ public class Game extends Application {
         stage.setScene(scene);
         stage.show();
 
+
+
+//        Timeline timeline2 = new Timeline(new KeyFrame(
+//                Duration.millis(1000 / 60),
+//                ae -> {
+//                    enemies.forEach(enemy ->{
+//                        enemy.move();
+//                        if (Double.compare(enemy.getX(), Settings.PIXS_PER_PIC * Settings.MAP_COL) > 0 || Double.compare(enemy.getY(), Settings.PIXS_PER_PIC * Settings.MAP_ROW) > 0){
+//                            enemy.setRemovable(true);
+//                        }
+//                    });
+//                }));
+//        timeline2.setCycleCount(Animation.INDEFINITE);
+//        timeline2.play();
+
         gameloop = new AnimationTimer() {
             @Override
             public void handle(long l) {
+//              another idea for periodically run a function in animationTimer
+//              1 second animationTimer runs 60 times (60 FPS)
+                rnd++;
+                if (rnd > 120) rnd = 0;
+                if(rnd == 120) {
+                    spawnEnemies();
+                }
+
+                weapons.forEach(weapon -> {
+                    if (weapon.getTarget() == null) {
+                        weapon.findTarget(enemies);
+                    } else {
+                        weapon.checkTarget();
+                        //fire();
+                    }
+                    weapon.move();
+                });
+                weapons.forEach(weapon -> weapon.move());
+
+                enemies.forEach(enemy ->{
+                    enemy.move();
+                    if (Double.compare(enemy.getX(), Settings.PIXS_PER_PIC * Settings.MAP_COL) > 0 || Double.compare(enemy.getY(), Settings.PIXS_PER_PIC * Settings.MAP_ROW) > 0){
+                        enemy.setRemovable(true);
+                    }
+                });
+
+                removeEntities(enemies);
                 updateInfoLayer();
             }
         };
