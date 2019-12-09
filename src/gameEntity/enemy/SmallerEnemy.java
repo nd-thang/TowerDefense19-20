@@ -1,4 +1,4 @@
-package GameEntity.enemy;
+package gameEntity.enemy;
 
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;

@@ -1,7 +1,7 @@
-package GameEntity.weapon;
+package gameEntity.weapon;
 
-import GameEntity.EntityBase;
-import GameEntity.enemy.Enemy;
+import gameEntity.EntityBase;
+import gameEntity.enemy.Enemy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -14,15 +14,30 @@ public class Weapon extends EntityBase {
     double attackSpeed;
     double attackRange;
     Enemy target;
+    int timeForShoot;
+    Image basement;
+    ImageView basementView;
 
-    double roatationEasing = 10; // the higher the value, the slower the rotation
+    double rotationEasing = 10; // the higher the value, the slower the rotation
 
-    public Weapon(Pane layer, Image image, double x, double y, double r, double dx, double dy, double dr, double damage, double cost, double attackSpeed, double attackRange) {
+
+
+    public Weapon(Pane layer, Image image, double x, double y, double r, double dx, double dy, double dr, double damage, double cost, double attackSpeed, double attackRange, Image basement) {
         super(layer, image, x, y, r, dx, dy, dr);
         this.damage = damage;
         this.cost = cost;
         this.attackSpeed = attackSpeed;
         this.attackRange = attackRange;
+        timeForShoot = (int) (60 / attackSpeed) ;
+        this.basement = basement;
+
+        this.basementView = new ImageView(basement);
+        double topleftX = x - basement.getWidth() / 2;
+        double topleftY = y - basement.getHeight() / 2;
+
+        this.basementView.relocate(topleftX, topleftY);
+        //add first to the root (nếu không thì hiện đè lên hình khẩu súng)
+        layer.getChildren().add(0, basementView);
     }
 
     public void move(){
@@ -43,11 +58,14 @@ public class Weapon extends EntityBase {
 //            } else {
 //            this.setR(this.getR() + (targetAngle - this.getR()) / roatationEasing);
 //            }
-            //luôn quay theo cách quay gần nhất(nếu góc quay > 180 thì quay với góc bù và ngươc lại)
+
+            //reset khi góc lớn 360
+            if (this.getR() > 360) this.setR(this.getR() - 360);
+            //quay theo cách quay gần nhất(nếu góc quay > 180 thì quay với góc bù và ngươc lại)
             if(Math.abs(targetAngle - this.getR()) > 180) {
-                this.setR(this.getR() + - (360 - Math.abs(targetAngle - this.getR())) / roatationEasing);
+                this.setR(this.getR() - (360 - Math.abs(targetAngle - this.getR())) / rotationEasing);
             } else {
-                this.setR(this.getR() + (targetAngle - this.getR()) / roatationEasing);
+                this.setR(this.getR() + (targetAngle - this.getR()) / rotationEasing);
             }
         }
         super.move();
@@ -75,6 +93,8 @@ public class Weapon extends EntityBase {
             }
         }
         this.target = closetTarget;
+        //reset timeForShoot;
+//       this.timeForShoot = (int) (60 / attackSpeed) - 1;
     };
 
     public void checkTarget(){
@@ -88,6 +108,21 @@ public class Weapon extends EntityBase {
         if (Double.compare(distance, this.attackRange) > 0) {
             setTarget(null);
         }
+    }
+
+    public boolean shoot(){
+        if(timeForShoot == (int) (60 / attackSpeed)) {
+            timeForShoot = 0;
+            return true;
+        }
+        timeForShoot++;
+        return false;
+    }
+
+    @Override
+    public void removeFromLayer() {
+        super.removeFromLayer();
+        this.getLayer().getChildren().remove(basementView);
     }
 
     public Enemy getTarget() {

@@ -1,13 +1,17 @@
-package GameEntity.enemy;
+package gameEntity.enemy;
 
-import GameEntity.EntityBase;
+import gameEntity.EntityBase;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import ui.HealthBar;
 
 public class Enemy extends EntityBase {
     double health;
     double reward;
     double speed;
+
+    HealthBar healthBar;
+    double healthMax;
 
     int movingPhase = 0;// pha di chuyển (hardcode)
 
@@ -16,6 +20,10 @@ public class Enemy extends EntityBase {
         this.health = health;
         this.reward = reward;
         this.speed = speed;
+        healthMax = health;
+
+        healthBar = new HealthBar();
+        this.getLayer().getChildren().add(this.healthBar);
     }
 
     public void move2(){
@@ -83,6 +91,17 @@ public class Enemy extends EntityBase {
         if (movingPhase == 3 && Double.compare(this.getX(), 64 * 6) >= 0) movingPhase++;
         if (movingPhase == 4 && Double.compare(this.getY(), 64 * 5) >= 0) movingPhase++;
         super.move();
+    }
+
+    public void updateHealthBar(){
+        healthBar.setValue(health / healthMax);
+        healthBar.relocate(this.getX() - this.healthBar.getOuterHealthRect().getWidth() / 2, this.getY() - this.getImage().getWidth() / 2 + healthBar.getHeight() - 4);
+    }
+
+    @Override
+    public void removeFromLayer() {
+        super.removeFromLayer();
+        this.getLayer().getChildren().remove(healthBar);
     }
 
     public double getHealth() {

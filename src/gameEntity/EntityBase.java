@@ -1,4 +1,4 @@
-package GameEntity;
+package gameEntity;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
