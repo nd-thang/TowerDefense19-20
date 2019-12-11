@@ -2,6 +2,7 @@ package gameEntity.enemy;
 
 import gameEntity.EntityBase;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import ui.HealthBar;
 
@@ -22,11 +23,11 @@ public class Enemy extends EntityBase {
         this.speed = speed;
         healthMax = health;
 
-        healthBar = new HealthBar();
+        healthBar = new HealthBar(image.getWidth() / 2);
         this.getLayer().getChildren().add(this.healthBar);
     }
 
-    public void move2(){
+    public void move2() {
         switch (movingPhase) {
             case 0:
                 this.setDx(0);
@@ -59,7 +60,7 @@ public class Enemy extends EntityBase {
     }
 
     @Override
-    public void move(){
+    public void move() {
         switch (movingPhase) {
             case 0:
 
@@ -93,9 +94,9 @@ public class Enemy extends EntityBase {
         super.move();
     }
 
-    public void updateHealthBar(){
+    public void updateHealthBar() {
         healthBar.setValue(health / healthMax);
-        healthBar.relocate(this.getX() - this.healthBar.getOuterHealthRect().getWidth() / 2, this.getY() - this.getImage().getWidth() / 2 + healthBar.getHeight() - 4);
+        healthBar.relocate(this.getX() - this.getImage().getWidth() / 4, this.getY() - this.getImage().getHeight() / 4 - 6);
     }
 
     @Override

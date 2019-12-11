@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Weapon extends EntityBase {
     double damage;
-    double cost ;
+    double cost;
     double attackSpeed;
     double attackRange;
     Enemy target;
@@ -20,15 +20,13 @@ public class Weapon extends EntityBase {
 
     double rotationEasing = 10; // the higher the value, the slower the rotation
 
-
-
     public Weapon(Pane layer, Image image, double x, double y, double r, double dx, double dy, double dr, double damage, double cost, double attackSpeed, double attackRange, Image basement) {
         super(layer, image, x, y, r, dx, dy, dr);
         this.damage = damage;
         this.cost = cost;
         this.attackSpeed = attackSpeed;
         this.attackRange = attackRange;
-        timeForShoot = (int) (60 / attackSpeed) ;
+        timeForShoot = (int) (60 / attackSpeed);
         this.basement = basement;
 
         this.basementView = new ImageView(basement);
@@ -40,8 +38,8 @@ public class Weapon extends EntityBase {
         layer.getChildren().add(0, basementView);
     }
 
-    public void move(){
-        if(target != null){
+    public void move() {
+        if (target != null) {
             double deltaX = target.getX() - this.getX();
             double deltaY = target.getY() - this.getY();
             double angle = Math.abs(Math.atan(deltaY / deltaX) / Math.PI * 180);
@@ -62,7 +60,7 @@ public class Weapon extends EntityBase {
             //reset khi góc lớn 360
             if (this.getR() > 360) this.setR(this.getR() - 360);
             //quay theo cách quay gần nhất(nếu góc quay > 180 thì quay với góc bù và ngươc lại)
-            if(Math.abs(targetAngle - this.getR()) > 180) {
+            if (Math.abs(targetAngle - this.getR()) > 180) {
                 this.setR(this.getR() - (360 - Math.abs(targetAngle - this.getR())) / rotationEasing);
             } else {
                 this.setR(this.getR() + (targetAngle - this.getR()) / rotationEasing);
@@ -71,10 +69,10 @@ public class Weapon extends EntityBase {
         super.move();
     }
 
-    public void findTarget(List<Enemy> enemies){
+    public void findTarget(List<Enemy> enemies) {
         double distance, minDistance = 0;
         Enemy closetTarget = null;
-        for (Enemy enemy: enemies){
+        for (Enemy enemy : enemies) {
             double a = this.getX() - enemy.getX();
             double b = this.getY() - enemy.getY();
             distance = Math.sqrt(a * a + b * b);
@@ -85,7 +83,7 @@ public class Weapon extends EntityBase {
                     minDistance = distance;
                     closetTarget = enemy;
                 } else {
-                    if (Double.compare(distance, minDistance) < 0){
+                    if (Double.compare(distance, minDistance) < 0) {
                         closetTarget = enemy;
                         minDistance = distance;
                     }
@@ -95,10 +93,12 @@ public class Weapon extends EntityBase {
         this.target = closetTarget;
         //reset timeForShoot;
 //       this.timeForShoot = (int) (60 / attackSpeed) - 1;
-    };
+    }
 
-    public void checkTarget(){
-        if(Double.compare(target.getHealth(), 0) < 0 || target.isRemovable()) {
+    ;
+
+    public void checkTarget() {
+        if (Double.compare(target.getHealth(), 0) < 0 || target.isRemovable()) {
             setTarget(null);
             return;
         }
@@ -110,8 +110,8 @@ public class Weapon extends EntityBase {
         }
     }
 
-    public boolean shoot(){
-        if(timeForShoot == (int) (60 / attackSpeed)) {
+    public boolean shoot() {
+        if (timeForShoot == (int) (60 / attackSpeed)) {
             timeForShoot = 0;
             return true;
         }

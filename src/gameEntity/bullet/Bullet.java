@@ -29,7 +29,7 @@ public class Bullet extends EntityBase {
 //        layer.getChildren().add(explodeView);
     }
 
-    public void move(){
+    public void move() {
         if (target != null) {
             double deltaX = target.getX() - this.getX();
             double deltaY = target.getY() - this.getY();
@@ -40,7 +40,7 @@ public class Bullet extends EntityBase {
                 this.setX(this.getX() + velocity * Math.cos(angle / 180 * Math.PI));
                 this.setY(this.getY() - velocity * Math.sin(angle / 180 * Math.PI));
             }
-            if (deltaX <= 0 && deltaY <= 0){
+            if (deltaX <= 0 && deltaY <= 0) {
                 targetAngle = 270 + angle;
                 this.setX(this.getX() - velocity * Math.cos(angle / 180 * Math.PI));
                 this.setY(this.getY() - velocity * Math.sin(angle / 180 * Math.PI));
@@ -50,22 +50,27 @@ public class Bullet extends EntityBase {
                 this.setX(this.getX() - velocity * Math.cos(angle / 180 * Math.PI));
                 this.setY(this.getY() + velocity * Math.sin(angle / 180 * Math.PI));
             }
-            if (deltaX >= 0 && deltaY >= 0){
+            if (deltaX >= 0 && deltaY >= 0) {
                 targetAngle = 90 + angle;
                 this.setX(this.getX() + velocity * Math.cos(angle / 180 * Math.PI));
                 this.setY(this.getY() + velocity * Math.sin(angle / 180 * Math.PI));
+//                System.out.println(this.getX());
+//                System.out.println(this.getY());
+//                System.out.println(Math.cos(angle / 180 * Math.PI));
+//                System.out.println(Math.sin(angle / 180 * Math.PI));
+//                System.out.println(targetAngle);
             }
-            if(Math.abs(targetAngle - this.getR()) > 180) {
-                this.setR(this.getR() + - (360 - Math.abs(targetAngle - this.getR())) / rotationEasing);
+            if (Math.abs(targetAngle - this.getR()) > 180) {
+                this.setR(this.getR() + -(360 - Math.abs(targetAngle - this.getR())) / rotationEasing);
             } else {
                 this.setR(this.getR() + (targetAngle - this.getR()) / rotationEasing);
             }
-            super.move();
         } else {
             //tạm thời nếu viên đạn bắn ra mà dịch chết trước rồi thì cũng biến mất luôn.
             // nếu để nó bay tiếp với tọa độ địch ở chỗ đó thì chưa xử lí được nếu trúng con khác(bắn trượt)
             this.setRemovable(true);
         }
+        super.move();
     }
 
     public double getDamage() {

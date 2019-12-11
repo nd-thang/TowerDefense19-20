@@ -9,12 +9,13 @@ public class HealthBar extends Pane {
 
     Rectangle outerHealthRect;
     Rectangle innerHealthRect;
+    double outerWidth;
 
-    public HealthBar() {
+    public HealthBar(double outerWidth) {
 
         double height = 5;
 
-        double outerWidth = 30;
+        this.outerWidth = outerWidth;
         double innerWidth = 0;
 
         double x = 0.0;
@@ -32,6 +33,14 @@ public class HealthBar extends Pane {
 
         getChildren().addAll(outerHealthRect, innerHealthRect);
 
+    }
+
+    public double getOuterWidth() {
+        return outerWidth;
+    }
+
+    public void setOuterWidth(double outerWidth) {
+        this.outerWidth = outerWidth;
     }
 
     public void setValue(double value) {

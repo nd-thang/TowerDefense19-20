@@ -38,7 +38,7 @@ public abstract class EntityBase {
         layer.getChildren().add(imageView);
     }
 
-    public void move(){
+    public void move() {
         x += dx;
         y += dy;
         r += dr;
@@ -50,7 +50,7 @@ public abstract class EntityBase {
         this.imageView.setRotate(r);
     }
 
-    public void updateUI(){
+    public void updateUI() {
     }
 
     public void removeFromLayer() {
