@@ -22,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -34,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
+import javax.sound.sampled.AudioInputStream;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
@@ -66,7 +68,7 @@ public class Game extends Application {
     Text levelLabel = new Text();
     Text levelText = new Text("Level: ");
     Text moneyLabel = new Text(Double.toString(money));
-    Text livesLabel = new Text(Double.toString(lives));
+    Text livesLabel = new Text(String.format("%d", lives));
     Button pause = new Button("Pause");
     Button nextLevel = new Button("Next Level");
     Button sell = new Button("Sell");
@@ -103,11 +105,24 @@ public class Game extends Application {
 
     private void updateInfoLayer() {
         //update front - end infolayer
-        if (money < Settings.SCANNON_COST) singleCannon.setOpacity(0.2);
-        if (money < Settings.SROCKET_COST) singleRocket.setOpacity(0.2);
-        if (money < Settings.MISSILE_COST) missile.setOpacity(0.2);
+        //opacity chuyển từ 0.2 thành 1 và ngược lại mỗi khi thỏa mãn hay không tm điều kiện.
+        if (money < Settings.SCANNON_COST) {
+            singleCannon.setOpacity(0.2);
+        } else {
+            singleCannon.setOpacity(1);
+        }
+        if (money < Settings.SROCKET_COST) {
+            singleRocket.setOpacity(0.2);
+        } else {
+            singleRocket.setOpacity(1);
+        }
+        if (money < Settings.MISSILE_COST) {
+            missile.setOpacity(0.2);
+        } else {
+            missile.setOpacity(1);
+        }
         moneyLabel.setText(Double.toString(money));
-        livesLabel.setText(Double.toString(lives));
+        livesLabel.setText(String.format("%d", lives));
         levelLabel.setText(String.format("%d / %d", level, levelMax));
     }
 
@@ -510,6 +525,8 @@ public class Game extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
+
         backgroundLayer = new Pane();
         root.getChildren().add(backgroundLayer);
         infoLayer = new GridPane();
@@ -532,12 +549,26 @@ public class Game extends Application {
             play.setLayoutY(330);
             backgroundLayer.getChildren().addAll(imageView, play);
             stage.sizeToScene();
+            AudioClip ac = new AudioClip(new File("resources/audio/opening.mp3").toURI().toString());
+            ac.play();
+            ac.setCycleCount(AudioClip.INDEFINITE);
             play.setOnMouseClicked(e -> {
+                ac.stop();
                 backgroundLayer.getChildren().removeAll(imageView, play);
                 createBackgroundLayer();
                 createInfoLayer();
                 stage.sizeToScene();
                 playfieldLayer.setPrefSize(Settings.PIXS_PER_PIC * 10, Settings.PIXS_PER_PIC * 7);
+                //nhạc nhẽo
+//                Media media = new Media(new File("resources/audio/opening.mp3").toURI().toString());
+//                MediaPlayer mediaPlayer = new MediaPlayer(media);
+//                mediaPlayer.play();
+////              mediaPlayer.setVolume(2);
+//                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+//                mediaPlayer.setAutoPlay(true);
+                AudioClip ac2 = new AudioClip(new File("resources/audio/inGame.mp3").toURI().toString());
+                ac2.play();
+                ac2.setCycleCount(AudioClip.INDEFINITE);
 
 //        spawnEnemies();
 
@@ -604,7 +635,7 @@ public class Game extends Application {
                             if (isSelling) {
                                 weapon.getImageView().setOnMouseClicked(e -> {
                                     weapon.setRemovable(true);
-                                    //todo: bán thì nhận được 1/2 giá mua.
+                                    //bán thì nhận được 1/2 giá mua.
                                     money += weapon.getCost() / 2;
                                 });
                             }
@@ -652,13 +683,10 @@ public class Game extends Application {
                                     newBullet.setTarget(weapon.getTarget());
                                     newBullet.setDamage(weapon.getDamage());
                                     bullets.add(newBullet);
-
-//                            Media media = new Media("file:resources/3547.mp3");
-//                            Media media = new Media(new File("resources/abc.mp3").toURI().toString());
-//                            MediaPlayer mediaPlayer = new MediaPlayer(media);
-//                            mediaPlayer.play();
-//                            mediaPlayer.setAutoPlay(true);
-
+                                    //nhạc nhẽo
+                                    AudioClip ac = new AudioClip(new File("resources/audio/414886__mattix__retro-laser-shot-02.wav").toURI().toString());
+                                    ac.setVolume(0.15);
+                                    ac.play();
                                 }
                             }
                             weapon.move();
